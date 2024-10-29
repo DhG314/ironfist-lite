@@ -24,7 +24,7 @@ public abstract class PacketHandler {
     public static void init() {
         IronFist.LOGGER.info("Registering network messages");
         instance.registerMessage(0, MessageFistSync.class, MessageFistSync::encode, MessageFistSync::decode, MessageFistSync::handle);
-//        instance.registerMessage(1, MessageConfigSync.class, MessageConfigSync::encode, MessageConfigSync::decode, MessageConfigSync::handle);
+        instance.registerMessage(1, MessageConfigSync.class, MessageConfigSync::encode, MessageConfigSync::decode, MessageConfigSync::handle);
     }
 
     public record MessageFistSync(int fistLV, float fistXP){
@@ -38,9 +38,8 @@ public abstract class PacketHandler {
         }
 
         public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-            contextSupplier.get().enqueueWork(() -> {
-                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> clientPacketHandler.handlePacketFist(this,contextSupplier));
-            });
+            contextSupplier.get().enqueueWork(() ->
+                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> clientPacketHandler.handlePacketFist(this,contextSupplier)));
             contextSupplier.get().setPacketHandled(true);
 
         }
@@ -57,9 +56,8 @@ public abstract class PacketHandler {
             return new MessageConfigSync(Buf.readBoolean(), Buf.readInt(), Buf.readFloat());
         }
         public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-            contextSupplier.get().enqueueWork(() -> {
-                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> clientPacketHandler.handlePacketConfig(this,contextSupplier));
-            });
+            contextSupplier.get().enqueueWork(() ->
+                    DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> clientPacketHandler.handlePacketConfig(this,contextSupplier)));
             contextSupplier.get().setPacketHandled(true);
         }
     }
