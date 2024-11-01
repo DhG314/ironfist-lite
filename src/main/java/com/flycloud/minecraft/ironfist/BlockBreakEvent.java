@@ -1,8 +1,11 @@
 package com.flycloud.minecraft.ironfist;
 
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -34,7 +37,16 @@ public class BlockBreakEvent {
             return;
         }
         int fistLV = IFPlayer.getFistLV();
-        event.setNewSpeed(fistLV);
+        float hardness = event.getState().getDestroySpeed(event.getEntity().level(), event.getPosition().get());
+        hardness= Math.max(hardness, 0.1f);
+        if(Config.limitBreakSpeed>0){
+            float newSpeed = hardness * 2/3 * Config.limitBreakSpeed;
+            if(Math.min(Config.limitBreakSpeed, fistLV) > newSpeed) {
+                event.setNewSpeed(newSpeed);
+            }
+        }else {
+            event.setNewSpeed(fistLV);
+        }
     }
 
     @SubscribeEvent
@@ -45,6 +57,26 @@ public class BlockBreakEvent {
         }
 
         event.setCanHarvest(true);
+    }
+
+    @SubscribeEvent
+    public void onPlayerAttackEntity(AttackEntityEvent event) {
+        IronFistPlayer IFPlayer = getIFPlayer(event.getEntity());
+        if (IFPlayer == null) {
+            return;
+        }
+        int fistLV = IFPlayer.getFistLV();
+        if(Config.fistDamage) {
+            AttributeInstance attackDamage = event.getEntity().getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
+            AttributeModifier modifier = new AttributeModifier(event.getEntity().getUUID(), "Fist damage modifier", (double) (fistLV-1) /2, AttributeModifier.Operation.ADDITION);
+            try {
+                attackDamage.addTransientModifier(modifier);
+            } catch (IllegalArgumentException e) {
+                if(!e.getMessage().equals("Modifier is already applied on this attribute!")){
+                    throw e;
+                }
+            }
+        }
     }
 
 
