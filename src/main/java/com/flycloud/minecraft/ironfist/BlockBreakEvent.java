@@ -40,10 +40,14 @@ public class BlockBreakEvent {
         float hardness = event.getState().getDestroySpeed(event.getEntity().level(), event.getPosition().get());
         hardness= Math.max(hardness, 0.1f);
         if(Config.limitBreakSpeed>0){
-            float newSpeed = hardness * 2/3 * Config.limitBreakSpeed;
-            if(Math.min(Config.limitBreakSpeed, fistLV) > newSpeed) {
-                event.setNewSpeed(newSpeed);
-            }
+            event.setNewSpeed(Math.min(Math.min(Config.limitBreakSpeed, fistLV), hardness * 2/3 * Config.limitBreakSpeed));
+            // same to these lines:
+//            float newSpeed = hardness * 2/3 * Config.limitBreakSpeed;
+//            if(Math.min(Config.limitBreakSpeed, fistLV) > newSpeed) {
+//                event.setNewSpeed(newSpeed);
+//            }else{
+//                event.setNewSpeed(Math.min(Config.limitBreakSpeed, fistLV));
+//            }
         }else {
             event.setNewSpeed(fistLV);
         }

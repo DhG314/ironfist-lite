@@ -14,7 +14,7 @@ public class Config {
     private static final ForgeConfigSpec.BooleanValue FIST_ONLY = BUILDER.comment("Whether to only allow fists").define("fistOnly", false);
     private static final ForgeConfigSpec.IntValue MAX_LV = BUILDER.comment("The max level of fist").defineInRange("maxLV", 30, 0, Integer.MAX_VALUE);
     private static final ForgeConfigSpec.DoubleValue XPMULTIPLE = BUILDER.comment("The xp multiple").defineInRange("xpMultiple", 1.0, 0.1, Double.MAX_VALUE);
-    private static final ForgeConfigSpec.IntValue LIMIT_BREAK_SPEED = BUILDER.comment("The limit of break speed(0 to disable)").defineInRange("limitBreakSpeed", 10, 1, Integer.MAX_VALUE);
+    private static final ForgeConfigSpec.IntValue LIMIT_BREAK_SPEED = BUILDER.comment("The limit of break speed(0 to disable)").defineInRange("limitBreakSpeed", 10, 0, Integer.MAX_VALUE);
     private static final ForgeConfigSpec.BooleanValue FIST_DAMAGE = BUILDER.comment("Whether add fist damage").define("fistDamage", false);
 
     static final ForgeConfigSpec SPEC = BUILDER.build();
