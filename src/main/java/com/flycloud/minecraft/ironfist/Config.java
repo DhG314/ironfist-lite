@@ -16,6 +16,7 @@ public class Config {
     private static final ForgeConfigSpec.DoubleValue XPMULTIPLE = BUILDER.comment("The xp multiple").defineInRange("xpMultiple", 1.0, 0.1, Double.MAX_VALUE);
     private static final ForgeConfigSpec.IntValue LIMIT_BREAK_SPEED = BUILDER.comment("The limit of break speed(0 to disable)").defineInRange("limitBreakSpeed", 10, 0, Integer.MAX_VALUE);
     private static final ForgeConfigSpec.BooleanValue FIST_DAMAGE = BUILDER.comment("Whether add fist damage").define("fistDamage", false);
+    private static final ForgeConfigSpec.BooleanValue FIST_RANGE = BUILDER.comment("Whether add fist range").define("fistRange", false);
 
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
@@ -24,6 +25,7 @@ public class Config {
     public static float XPMultiple = 1.0f;
     public static int limitBreakSpeed = 10;
     public static boolean fistDamage = false;
+    public static boolean fistRange = false;
 
 
     @SubscribeEvent
@@ -33,6 +35,7 @@ public class Config {
         XPMultiple = XPMULTIPLE.get().floatValue();
         limitBreakSpeed = LIMIT_BREAK_SPEED.get();
         fistDamage = FIST_DAMAGE.get();
+        fistRange = FIST_RANGE.get();
         IronFist.LOGGER.info("IronFist config load");
     }
 }

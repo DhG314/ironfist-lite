@@ -4,6 +4,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -28,6 +29,22 @@ public class BlockBreakEvent {
             obtainedXP = 0;
         }
         IFPlayer.addFistXP(obtainedXP);
+
+        if(Config.fistRange){
+            int fistLV = IFPlayer.getFistLV();
+
+            AttributeInstance blockReach = IFPlayer.getPlayer().getAttribute(ForgeMod.BLOCK_REACH.get());
+            AttributeModifier blockReachModifier = new AttributeModifier(IFPlayer.getPlayer().getUUID(), "Fist block range modifier", (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADDITION);
+            if (blockReach != null && !blockReach.hasModifier(blockReachModifier)) {
+                blockReach.addTransientModifier(blockReachModifier);
+            }
+
+            AttributeInstance entityReach = IFPlayer.getPlayer().getAttribute(ForgeMod.ENTITY_REACH.get());
+            AttributeModifier entityReachModifier = new AttributeModifier(IFPlayer.getPlayer().getUUID(), "Fist entity range modifier", (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADDITION);
+            if (entityReach != null && !entityReach.hasModifier(entityReachModifier)) {
+                entityReach.addTransientModifier(entityReachModifier);
+            }
+        }
     }
 
     @SubscribeEvent
@@ -72,13 +89,9 @@ public class BlockBreakEvent {
         int fistLV = IFPlayer.getFistLV();
         if(Config.fistDamage) {
             AttributeInstance attackDamage = event.getEntity().getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
-            AttributeModifier modifier = new AttributeModifier(event.getEntity().getUUID(), "Fist damage modifier", (double) (fistLV-1) /2, AttributeModifier.Operation.ADDITION);
-            try {
-                attackDamage.addTransientModifier(modifier);
-            } catch (IllegalArgumentException e) {
-                if(!e.getMessage().equals("Modifier is already applied on this attribute!")){
-                    throw e;
-                }
+            AttributeModifier attackDamageModifier = new AttributeModifier(event.getEntity().getUUID(), "Fist damage modifier", (double) (fistLV-1) /2, AttributeModifier.Operation.ADDITION);
+            if (attackDamage != null && !attackDamage.hasModifier(attackDamageModifier)) {
+                attackDamage.addTransientModifier(attackDamageModifier);
             }
         }
     }
