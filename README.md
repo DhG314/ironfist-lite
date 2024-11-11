@@ -1,3 +1,3 @@
 A minecraft mod 
 
-CurseForge link <https://legacy.curseforge.com/minecraft/mc-mods/ironfist-lite>
+CurseForge link <https://curseforge.com/minecraft/mc-mods/ironfist-lite>
