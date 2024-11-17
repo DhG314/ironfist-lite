@@ -96,22 +96,6 @@ public class BlockBreakEvent {
         }
     }
 
-    @SubscribeEvent
-    public void onPlayerDeath(PlayerEvent.Clone event) {
-        if(!event.isWasDeath()){
-            return;
-        }
-        IronFistPlayer oldPlayer = getIFPlayer(event.getOriginal());
-        IronFistPlayer newPlayer = getIFPlayer(event.getEntity());
-        if(oldPlayer == null || newPlayer == null){
-            return;
-        }
-        if(Config.saveDataOnDeath) {
-            newPlayer.setFistLV(oldPlayer.getFistLV());
-            newPlayer.setFistXP(oldPlayer.getFistXP());
-        }
-    }
-
 
     private IronFistPlayer getIFPlayer(Player player) {
         if (player == null || player instanceof FakePlayer) {

@@ -17,7 +17,6 @@ public class Config {
     private static final ForgeConfigSpec.IntValue LIMIT_BREAK_SPEED = BUILDER.comment("The limit of break speed(0 to disable)").defineInRange("limitBreakSpeed", 10, 0, Integer.MAX_VALUE);
     private static final ForgeConfigSpec.BooleanValue FIST_DAMAGE = BUILDER.comment("Whether add fist damage").define("fistDamage", false);
     private static final ForgeConfigSpec.BooleanValue FIST_RANGE = BUILDER.comment("Whether add fist range").define("fistRange", false);
-    private static final ForgeConfigSpec.BooleanValue SAVE_DATA_ON_DEATH = BUILDER.comment("Whether save data on death").define("saveDataOnDeath", true);
 
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
@@ -27,8 +26,7 @@ public class Config {
     public static int limitBreakSpeed = 10;
     public static boolean fistDamage = false;
     public static boolean fistRange = false;
-    public static boolean saveDataOnDeath = true;
-    //记得改PacketHandler
+
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
@@ -38,7 +36,6 @@ public class Config {
         limitBreakSpeed = LIMIT_BREAK_SPEED.get();
         fistDamage = FIST_DAMAGE.get();
         fistRange = FIST_RANGE.get();
-        saveDataOnDeath = SAVE_DATA_ON_DEATH.get();
         IronFist.LOGGER.info("IronFist config load");
     }
 }
