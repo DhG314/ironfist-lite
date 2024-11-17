@@ -46,14 +46,32 @@ public abstract class PacketHandler {
 
     }
 
-    public record MessageConfigSync(boolean fistOnly, int maxLV, float XPMultiple){
+    public record MessageConfigSync(boolean fistOnly,
+                                    int maxLV,
+                                    float XPMultiple,
+                                    int limitBreakSpeed,
+                                    boolean fistDamage,
+                                    boolean fistRange,
+                                    boolean saveDataOnDeath){
         public void encode(FriendlyByteBuf Buf) {
             Buf.writeBoolean(fistOnly);
             Buf.writeInt(maxLV);
             Buf.writeFloat(XPMultiple);
+            Buf.writeInt(limitBreakSpeed);
+            Buf.writeBoolean(fistDamage);
+            Buf.writeBoolean(fistRange);
+            Buf.writeBoolean(saveDataOnDeath);
         }
         public static MessageConfigSync decode(FriendlyByteBuf Buf) {
-            return new MessageConfigSync(Buf.readBoolean(), Buf.readInt(), Buf.readFloat());
+            return new MessageConfigSync(
+                    Buf.readBoolean(),
+                    Buf.readInt(),
+                    Buf.readFloat(),
+                    Buf.readInt(),
+                    Buf.readBoolean(),
+                    Buf.readBoolean(),
+                    Buf.readBoolean()
+            );
         }
         public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
             contextSupplier.get().enqueueWork(() ->
@@ -78,6 +96,10 @@ public abstract class PacketHandler {
                 Config.fistOnly = msg.fistOnly;
                 Config.maxLV = msg.maxLV;
                 Config.XPMultiple = msg.XPMultiple;
+                Config.limitBreakSpeed = msg.limitBreakSpeed;
+                Config.fistDamage = msg.fistDamage;
+                Config.fistRange = msg.fistRange;
+                Config.saveDataOnDeath = msg.saveDataOnDeath;
             }
         }
     }
