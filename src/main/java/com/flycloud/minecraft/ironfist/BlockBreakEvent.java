@@ -33,13 +33,13 @@ public class BlockBreakEvent {
         if(Config.fistRange){
             int fistLV = IFPlayer.getFistLV();
 
-            AttributeInstance blockReach = IFPlayer.getPlayer().getAttribute(ForgeMod.BLOCK_REACH.get());
+            AttributeInstance blockReach = IFPlayer.getPlayer().getAttribute(ForgeMod.REACH_DISTANCE.get());
             AttributeModifier blockReachModifier = new AttributeModifier(IFPlayer.getPlayer().getUUID(), "Fist block range modifier", (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADDITION);
             if (blockReach != null && !blockReach.hasModifier(blockReachModifier)) {
                 blockReach.addTransientModifier(blockReachModifier);
             }
 
-            AttributeInstance entityReach = IFPlayer.getPlayer().getAttribute(ForgeMod.ENTITY_REACH.get());
+            AttributeInstance entityReach = IFPlayer.getPlayer().getAttribute(ForgeMod.ATTACK_RANGE.get());
             AttributeModifier entityReachModifier = new AttributeModifier(IFPlayer.getPlayer().getUUID(), "Fist entity range modifier", (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADDITION);
             if (entityReach != null && !entityReach.hasModifier(entityReachModifier)) {
                 entityReach.addTransientModifier(entityReachModifier);
@@ -54,7 +54,7 @@ public class BlockBreakEvent {
             return;
         }
         int fistLV = IFPlayer.getFistLV();
-        float hardness = event.getState().getDestroySpeed(event.getEntity().level(), event.getPosition().get());
+        float hardness = event.getState().getDestroySpeed(event.getEntity().getLevel(), event.getPosition().get());
         hardness= Math.max(hardness, 0.1f);
         if(Config.limitBreakSpeed>0){
             event.setNewSpeed(Math.min(Math.min(Config.limitBreakSpeed, fistLV), hardness * 2/3 * Config.limitBreakSpeed));
