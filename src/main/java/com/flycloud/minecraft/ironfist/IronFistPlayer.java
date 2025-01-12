@@ -31,7 +31,7 @@ public class IronFistPlayer {
     }
 
     public void say(String msg) {
-        player.sendSystemMessage(Component.nullToEmpty(msg));
+        player.sendMessage(Component.nullToEmpty(msg),player.getUUID());
     }
 
     public void save() {
@@ -70,8 +70,8 @@ public class IronFistPlayer {
     public void levelUp() {
         fistLV++;
         updateRequiredXP();
-        player.sendSystemMessage(Component.nullToEmpty(StringUtils.translate("fist.levelup")));
-        player.sendSystemMessage(Component.nullToEmpty(StringUtils.translateWithFormat("fist.showdata", fistLV, fistXP, requiredXP)));
+        player.sendMessage(Component.nullToEmpty(StringUtils.translate("fist.levelup")), player.getUUID());
+        player.sendMessage(Component.nullToEmpty(StringUtils.translateWithFormat("fist.showdata", fistLV, fistXP, requiredXP)), player.getUUID());
     }
 
     public float getFistXP() {

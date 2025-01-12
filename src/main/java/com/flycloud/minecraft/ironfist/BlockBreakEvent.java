@@ -8,7 +8,7 @@ import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -22,7 +22,7 @@ public class BlockBreakEvent {
         if (IFPlayer == null) {
             return;
         }
-        float hardness = event.getState().getDestroySpeed(event.getLevel(), event.getPos());
+        float hardness = event.getState().getDestroySpeed(event.getWorld(), event.getPos());
         if(hardness > 0){
             obtainedXP = hardness * Config.XPMultiple;
         }else {
@@ -49,12 +49,12 @@ public class BlockBreakEvent {
 
     @SubscribeEvent
     public void onBreakSpeed(PlayerEvent.BreakSpeed event) {
-        IronFistPlayer IFPlayer = getIFPlayer(event.getEntity());
+        IronFistPlayer IFPlayer = getIFPlayer(event.getPlayer());
         if (IFPlayer == null) {
             return;
         }
         int fistLV = IFPlayer.getFistLV();
-        float hardness = event.getState().getDestroySpeed(event.getEntity().getLevel(), event.getPosition().get());
+        float hardness = event.getState().getDestroySpeed(event.getEntity().getLevel(), event.getPos());
         hardness= Math.max(hardness, 0.1f);
         if(Config.limitBreakSpeed>0){
             event.setNewSpeed(Math.min(Math.min(Config.limitBreakSpeed, fistLV), hardness * 2/3 * Config.limitBreakSpeed));
@@ -72,7 +72,7 @@ public class BlockBreakEvent {
 
     @SubscribeEvent
     public void canHarvestBlock(PlayerEvent.HarvestCheck event) {
-        IronFistPlayer IFPlayer = getIFPlayer(event.getEntity());
+        IronFistPlayer IFPlayer = getIFPlayer(event.getPlayer());
         if (IFPlayer == null) {
             return;
         }
@@ -82,13 +82,13 @@ public class BlockBreakEvent {
 
     @SubscribeEvent
     public void onPlayerAttackEntity(AttackEntityEvent event) {
-        IronFistPlayer IFPlayer = getIFPlayer(event.getEntity());
+        IronFistPlayer IFPlayer = getIFPlayer(event.getPlayer());
         if (IFPlayer == null) {
             return;
         }
         int fistLV = IFPlayer.getFistLV();
         if(Config.fistDamage) {
-            AttributeInstance attackDamage = event.getEntity().getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
+            AttributeInstance attackDamage = event.getPlayer().getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
             AttributeModifier attackDamageModifier = new AttributeModifier(event.getEntity().getUUID(), "Fist damage modifier", (double) (fistLV-1) /2, AttributeModifier.Operation.ADDITION);
             if (attackDamage != null && !attackDamage.hasModifier(attackDamageModifier)) {
                 attackDamage.addTransientModifier(attackDamageModifier);
@@ -102,7 +102,7 @@ public class BlockBreakEvent {
             return;
         }
         IronFistPlayer oldPlayer = getIFPlayer(event.getOriginal());
-        IronFistPlayer newPlayer = getIFPlayer(event.getEntity());
+        IronFistPlayer newPlayer = getIFPlayer(event.getPlayer());
         if(oldPlayer == null || newPlayer == null){
             return;
         }

@@ -35,6 +35,6 @@ public class IronFist {
 
     @SubscribeEvent
     public void onPlayerEnter(PlayerEvent.PlayerLoggedInEvent event) {
-        IronFistPlayer.get(event.getEntity()).sync();
+        IronFistPlayer.get(event.getPlayer()).sync();
     }
 }
