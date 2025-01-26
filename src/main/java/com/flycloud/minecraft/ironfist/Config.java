@@ -13,7 +13,7 @@ public class Config {
 
     private static final ForgeConfigSpec.BooleanValue FIST_ONLY = BUILDER.comment("Whether to only allow fists").define("fistOnly", false);
     private static final ForgeConfigSpec.IntValue MAX_LV = BUILDER.comment("The max level of fist").defineInRange("maxLV", 30, 0, Integer.MAX_VALUE);
-    private static final ForgeConfigSpec.DoubleValue XPMULTIPLE = BUILDER.comment("The xp multiple").defineInRange("xpMultiple", 1.0, 0.1, Double.MAX_VALUE);
+    private static final ForgeConfigSpec.DoubleValue XPMULTIPLE = BUILDER.comment("The xp multiple").defineInRange("xpMultiple", 1.0, 0.1, Float.MAX_VALUE);
     private static final ForgeConfigSpec.IntValue LIMIT_BREAK_SPEED = BUILDER.comment("The limit of break speed(0 to disable)").defineInRange("limitBreakSpeed", 10, 0, Integer.MAX_VALUE);
     private static final ForgeConfigSpec.BooleanValue FIST_DAMAGE = BUILDER.comment("Whether add fist damage").define("fistDamage", false);
     private static final ForgeConfigSpec.BooleanValue FIST_RANGE = BUILDER.comment("Whether add fist range").define("fistRange", false);
@@ -28,7 +28,7 @@ public class Config {
     public static boolean fistDamage = false;
     public static boolean fistRange = false;
     public static boolean saveDataOnDeath = true;
-    //记得改PacketHandler
+    //记得改PacketHandler和Command
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
@@ -40,5 +40,16 @@ public class Config {
         fistRange = FIST_RANGE.get();
         saveDataOnDeath = SAVE_DATA_ON_DEATH.get();
         IronFist.LOGGER.info("IronFist config load");
+    }
+    static void save(){
+        FIST_ONLY.set(fistOnly);
+        MAX_LV.set(maxLV);
+        XPMULTIPLE.set((double) XPMultiple);
+        LIMIT_BREAK_SPEED.set(limitBreakSpeed);
+        FIST_DAMAGE.set(fistDamage);
+        FIST_RANGE.set(fistRange);
+        SAVE_DATA_ON_DEATH.set(saveDataOnDeath);
+        SPEC.save();
+        IronFist.LOGGER.info("IronFist config save");
     }
 }

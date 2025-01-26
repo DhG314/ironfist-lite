@@ -35,13 +35,19 @@ public class BlockBreakEvent {
 
             AttributeInstance blockReach = IFPlayer.getPlayer().getAttribute(ForgeMod.BLOCK_REACH.get());
             AttributeModifier blockReachModifier = new AttributeModifier(IFPlayer.getPlayer().getUUID(), "Fist block range modifier", (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADDITION);
-            if (blockReach != null && !blockReach.hasModifier(blockReachModifier)) {
+            if (blockReach != null) {
+                if (blockReach.hasModifier(blockReachModifier)) {
+                    blockReach.removeModifier(blockReachModifier);
+                }
                 blockReach.addTransientModifier(blockReachModifier);
             }
 
             AttributeInstance entityReach = IFPlayer.getPlayer().getAttribute(ForgeMod.ENTITY_REACH.get());
             AttributeModifier entityReachModifier = new AttributeModifier(IFPlayer.getPlayer().getUUID(), "Fist entity range modifier", (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADDITION);
-            if (entityReach != null && !entityReach.hasModifier(entityReachModifier)) {
+            if (entityReach != null) {
+                if (entityReach.hasModifier(entityReachModifier)) {
+                    entityReach.removeModifier(entityReachModifier);
+                }
                 entityReach.addTransientModifier(entityReachModifier);
             }
         }
@@ -90,7 +96,10 @@ public class BlockBreakEvent {
         if(Config.fistDamage) {
             AttributeInstance attackDamage = event.getEntity().getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
             AttributeModifier attackDamageModifier = new AttributeModifier(event.getEntity().getUUID(), "Fist damage modifier", (double) (fistLV-1) /2, AttributeModifier.Operation.ADDITION);
-            if (attackDamage != null && !attackDamage.hasModifier(attackDamageModifier)) {
+            if (attackDamage != null) {
+                if (attackDamage.hasModifier(attackDamageModifier)) {
+                    attackDamage.removeModifier(attackDamageModifier);
+                }
                 attackDamage.addTransientModifier(attackDamageModifier);
             }
         }
