@@ -1,12 +1,8 @@
 package com.flycloud.minecraft.ironfist;
 
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -29,28 +25,6 @@ public class BlockBreakEvent {
             obtainedXP = 0;
         }
         IFPlayer.addFistXP(obtainedXP);
-
-        if(Config.fistRange){
-            int fistLV = IFPlayer.getFistLV();
-
-            AttributeInstance blockReach = IFPlayer.getPlayer().getAttribute(ForgeMod.REACH_DISTANCE.get());
-            AttributeModifier blockReachModifier = new AttributeModifier(IFPlayer.getPlayer().getUUID(), "Fist block range modifier", (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADDITION);
-            if (blockReach != null) {
-                if (blockReach.hasModifier(blockReachModifier)) {
-                    blockReach.removeModifier(blockReachModifier);
-                }
-                blockReach.addTransientModifier(blockReachModifier);
-            }
-
-            AttributeInstance entityReach = IFPlayer.getPlayer().getAttribute(ForgeMod.ATTACK_RANGE.get());
-            AttributeModifier entityReachModifier = new AttributeModifier(IFPlayer.getPlayer().getUUID(), "Fist entity range modifier", (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADDITION);
-            if (entityReach != null) {
-                if (entityReach.hasModifier(entityReachModifier)) {
-                    entityReach.removeModifier(entityReachModifier);
-                }
-                entityReach.addTransientModifier(entityReachModifier);
-            }
-        }
     }
 
     @SubscribeEvent
@@ -60,20 +34,12 @@ public class BlockBreakEvent {
             return;
         }
         int fistLV = IFPlayer.getFistLV();
-        float hardness = event.getState().getDestroySpeed(event.getEntity().getLevel(), event.getPos());
-        hardness= Math.max(hardness, 0.1f);
-        if(Config.limitBreakSpeed>0){
-            event.setNewSpeed(Math.min(Math.min(Config.limitBreakSpeed, fistLV), hardness * 2/3 * Config.limitBreakSpeed));
-            // same to these lines:
-//            float newSpeed = hardness * 2/3 * Config.limitBreakSpeed;
-//            if(Math.min(Config.limitBreakSpeed, fistLV) > newSpeed) {
-//                event.setNewSpeed(newSpeed);
-//            }else{
-//                event.setNewSpeed(Math.min(Config.limitBreakSpeed, fistLV));
-//            }
-        }else {
-            event.setNewSpeed(fistLV);
+        float speed = fistLV;
+        if(Config.limitBreakSpeed > 0){
+            float hardness = Math.max(event.getState().getDestroySpeed(event.getEntity().getLevel(), event.getPos()), 0.1f);
+            speed = Math.min(Math.min(Config.limitBreakSpeed, fistLV), hardness * 2/3 * Config.limitBreakSpeed);
         }
+        event.setNewSpeed(event.getOriginalSpeed() * speed);
     }
 
     @SubscribeEvent
@@ -84,25 +50,6 @@ public class BlockBreakEvent {
         }
 
         event.setCanHarvest(true);
-    }
-
-    @SubscribeEvent
-    public void onPlayerAttackEntity(AttackEntityEvent event) {
-        IronFistPlayer IFPlayer = getIFPlayer(event.getPlayer());
-        if (IFPlayer == null) {
-            return;
-        }
-        int fistLV = IFPlayer.getFistLV();
-        if(Config.fistDamage) {
-            AttributeInstance attackDamage = event.getPlayer().getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
-            AttributeModifier attackDamageModifier = new AttributeModifier(event.getEntity().getUUID(), "Fist damage modifier", (double) (fistLV-1) /2, AttributeModifier.Operation.ADDITION);
-            if (attackDamage != null) {
-                if (attackDamage.hasModifier(attackDamageModifier)) {
-                    attackDamage.removeModifier(attackDamageModifier);
-                }
-                attackDamage.addTransientModifier(attackDamageModifier);
-            }
-        }
     }
 
     @SubscribeEvent
