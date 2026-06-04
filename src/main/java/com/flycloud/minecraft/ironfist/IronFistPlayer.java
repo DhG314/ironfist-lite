@@ -3,7 +3,10 @@ package com.flycloud.minecraft.ironfist;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.network.NetworkDirection;
 
 public class IronFistPlayer {
@@ -34,6 +37,40 @@ public class IronFistPlayer {
         player.sendSystemMessage(Component.nullToEmpty(msg));
     }
 
+    public void applyAllModifiers() {
+        applyFistRangeModifiers();
+        applyFistDamageModifier();
+    }
+
+    private void applyFistRangeModifiers() {
+        AttributeInstance blockReach = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
+        if (blockReach != null) {
+            blockReach.removeModifier(player.getUUID());
+        }
+        AttributeInstance entityReach = player.getAttribute(ForgeMod.ATTACK_RANGE.get());
+        if (entityReach != null) {
+            entityReach.removeModifier(player.getUUID());
+        }
+        if (Config.fistRange) {
+            if (blockReach != null) {
+                blockReach.addTransientModifier(new AttributeModifier(player.getUUID(), "Fist block range modifier", (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADDITION));
+            }
+            if (entityReach != null) {
+                entityReach.addTransientModifier(new AttributeModifier(player.getUUID(), "Fist entity range modifier", (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADDITION));
+            }
+        }
+    }
+
+    private void applyFistDamageModifier() {
+        AttributeInstance attackDamage = player.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
+        if (attackDamage != null) {
+            attackDamage.removeModifier(player.getUUID());
+        }
+        if (Config.fistDamage && attackDamage != null) {
+            attackDamage.addTransientModifier(new AttributeModifier(player.getUUID(), "Fist damage modifier", (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADDITION));
+        }
+    }
+
     public void save() {
         updateRequiredXP();
         nbt.putInt(NAME + ".fistLV", fistLV);
@@ -45,6 +82,7 @@ public class IronFistPlayer {
         fistXP = nbt.getFloat(NAME + ".fistXP");
         updateRequiredXP();
         sync();
+        applyAllModifiers();
     }
 
     public void sync(){
@@ -70,6 +108,7 @@ public class IronFistPlayer {
     public void levelUp() {
         fistLV++;
         updateRequiredXP();
+        applyAllModifiers();
         player.sendSystemMessage(Component.nullToEmpty(StringUtils.translate("fist.levelup")));
         player.sendSystemMessage(Component.nullToEmpty(StringUtils.translateWithFormat("fist.showdata", fistLV, fistXP, requiredXP)));
     }
@@ -95,6 +134,7 @@ public class IronFistPlayer {
     public void setFistLV(int fistLV) {
         this.fistLV = fistLV;
         save();
+        applyAllModifiers();
     }
 
     public float getRequiredXP() {
