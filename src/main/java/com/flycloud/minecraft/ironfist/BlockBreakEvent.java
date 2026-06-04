@@ -57,8 +57,8 @@ public class BlockBreakEvent {
         if(!event.isWasDeath()){
             return;
         }
-        IronFistPlayer oldPlayer = getIFPlayer(event.getOriginal());
-        IronFistPlayer newPlayer = getIFPlayer(event.getEntity());
+        IronFistPlayer oldPlayer = IronFistPlayer.get(event.getOriginal());
+        IronFistPlayer newPlayer = IronFistPlayer.get(event.getEntity());
         if(oldPlayer == null || newPlayer == null){
             return;
         }
