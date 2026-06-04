@@ -14,6 +14,8 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.function.Supplier;
+
 @Mod.EventBusSubscriber(modid = IronFist.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class IronFistCommand {
     @SubscribeEvent
@@ -28,28 +30,44 @@ public class IronFistCommand {
                                         .executes(new setLVCommand())))
                         .then(Commands.literal("config")
                                 .then(Commands.literal("fistOnly")
+                                        .executes(showConfig("fistOnly", () -> Config.fistOnly))
                                         .then(Commands.argument("bool", BoolArgumentType.bool())
                                                 .executes(new changeConfigCommand.FistOnly())))
                                 .then(Commands.literal("maxLV")
+                                        .executes(showConfig("maxLV", () -> Config.maxLV))
                                         .then(Commands.argument("int", IntegerArgumentType.integer(0))
                                                 .executes(new changeConfigCommand.MaxLV())))
                                 .then(Commands.literal("XPMultiple")
+                                        .executes(showConfig("XPMultiple", () -> Config.XPMultiple))
                                         .then(Commands.argument("float", FloatArgumentType.floatArg(0.1f))
                                                 .executes(new changeConfigCommand.XPMultiple())))
                                 .then(Commands.literal("limitBreakSpeed")
+                                        .executes(showConfig("limitBreakSpeed", () -> Config.limitBreakSpeed))
                                         .then(Commands.argument("int", IntegerArgumentType.integer(0))
                                                 .executes(new changeConfigCommand.LimitBreakSpeed())))
                                 .then(Commands.literal("fistDamage")
+                                        .executes(showConfig("fistDamage", () -> Config.fistDamage))
                                         .then(Commands.argument("bool", BoolArgumentType.bool())
                                                 .executes(new changeConfigCommand.FistDamage())))
                                 .then(Commands.literal("fistRange")
+                                        .executes(showConfig("fistRange", () -> Config.fistRange))
                                         .then(Commands.argument("bool", BoolArgumentType.bool())
                                                 .executes(new changeConfigCommand.FistRange())))
                                 .then(Commands.literal("saveDataOnDeath")
+                                        .executes(showConfig("saveDataOnDeath", () -> Config.saveDataOnDeath))
                                         .then(Commands.argument("bool", BoolArgumentType.bool())
                                                 .executes(new changeConfigCommand.SaveDataOnDeath())))
                         )
         );
+    }
+
+    private static Command<CommandSourceStack> showConfig(String label, Supplier<Object> valueSupplier) {
+        return ctx -> {
+            if (ctx.getSource().getEntity() instanceof Player player) {
+                IronFistPlayer.get(player).say("config " + label + " = " + valueSupplier.get());
+            }
+            return 1;
+        };
     }
 
     public static class showLVCommand implements Command<CommandSourceStack> {
@@ -128,6 +146,7 @@ public class IronFistCommand {
                     Config.fistDamage = commandContext.getArgument("bool", Boolean.class);
                     IronFistPlayer.get(player).say("config fistDamage set to " + Config.fistDamage);
                     Config.save();
+                    IronFistPlayer.get(player).applyAllModifiers();
                 }
                 return 1;
             }
@@ -139,6 +158,7 @@ public class IronFistCommand {
                     Config.fistRange = commandContext.getArgument("bool", Boolean.class);
                     IronFistPlayer.get(player).say("config fistRange set to " + Config.fistRange);
                     Config.save();
+                    IronFistPlayer.get(player).applyAllModifiers();
                 }
                 return 1;
             }
