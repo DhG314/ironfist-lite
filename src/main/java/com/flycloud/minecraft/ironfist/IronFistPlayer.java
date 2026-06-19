@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.network.NetworkDirection;
 
@@ -37,6 +38,15 @@ public class IronFistPlayer {
         player.sendSystemMessage(Component.nullToEmpty(msg));
     }
 
+    private boolean shouldApplyFistModifiers() {
+        return !(player.getMainHandItem().getItem() != Items.AIR &&
+                (Config.fistOnly ||
+                        (player.getMainHandItem().hasTag() &&
+                                (player.getMainHandItem().getTags().anyMatch(
+                                        tag -> "minecraft:tools".equals(tag.location().toString()) || "forge:tools".equals(tag.location().toString()))
+                                ))));
+    }
+
     public void applyAllModifiers() {
         applyFistRangeModifiers();
         applyFistDamageModifier();
@@ -51,7 +61,7 @@ public class IronFistPlayer {
         if (entityReach != null) {
             entityReach.removeModifier(player.getUUID());
         }
-        if (Config.fistRange) {
+        if (Config.fistRange && shouldApplyFistModifiers()) {
             if (blockReach != null) {
                 blockReach.addTransientModifier(new AttributeModifier(player.getUUID(), "Fist block range modifier", (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADDITION));
             }
@@ -66,7 +76,7 @@ public class IronFistPlayer {
         if (attackDamage != null) {
             attackDamage.removeModifier(player.getUUID());
         }
-        if (Config.fistDamage && attackDamage != null) {
+        if (Config.fistDamage && shouldApplyFistModifiers() && attackDamage != null) {
             attackDamage.addTransientModifier(new AttributeModifier(player.getUUID(), "Fist damage modifier", (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADDITION));
         }
     }
