@@ -1,8 +1,10 @@
 package com.flycloud.minecraft.ironfist;
 
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -28,18 +30,25 @@ public class BlockBreakEvent {
     }
 
     @SubscribeEvent
+    public void onEquipmentChange(LivingEquipmentChangeEvent event) {
+        if (event.getSlot() == EquipmentSlot.MAINHAND && event.getEntity() instanceof Player player) {
+            IronFistPlayer.get(player).applyAllModifiers();
+        }
+    }
+
+    @SubscribeEvent
     public void onBreakSpeed(PlayerEvent.BreakSpeed event) {
         IronFistPlayer IFPlayer = getIFPlayer(event.getEntity());
         if (IFPlayer == null) {
             return;
         }
         int fistLV = IFPlayer.getFistLV();
-        float speed = fistLV;
+        float speed = fistLV * event.getOriginalSpeed();
         if(Config.limitBreakSpeed > 0){
             float hardness = Math.max(event.getState().getDestroySpeed(event.getEntity().getLevel(), event.getPosition().get()), 0.1f);
-            speed = Math.min(Math.min(Config.limitBreakSpeed, fistLV), hardness * 2/3 * Config.limitBreakSpeed);
+            speed = Math.min(speed, hardness * 2/3 * Config.limitBreakSpeed);
         }
-        event.setNewSpeed(event.getOriginalSpeed() * speed);
+        event.setNewSpeed(speed);
     }
 
     @SubscribeEvent
