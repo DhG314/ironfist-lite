@@ -3,14 +3,14 @@ package com.flycloud.minecraft.ironfist;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 
-@Mod.EventBusSubscriber(modid = IronFist.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class BlockBreakEvent {
 
     @SubscribeEvent
@@ -84,10 +84,11 @@ public class BlockBreakEvent {
         }
         if (player.getMainHandItem().getItem() != Items.AIR &&
                 (Config.fistOnly ||
-                        (player.getMainHandItem().hasTag() &&
-                                (player.getMainHandItem().getTags().anyMatch(
-                                        tag -> "minecraft:tools".equals(tag.location().toString()) || "forge:tools".equals(tag.location().toString()))
-                                )))) {
+                        (player.getMainHandItem().getTags().anyMatch(
+                                tag -> "minecraft:tools".equals(tag.location().toString()) ||
+                                       "c:tools".equals(tag.location().toString()) ||
+                                       "forge:tools".equals(tag.location().toString()))
+                        ))) {
             return null;
         }
         return IronFistPlayer.get(player);

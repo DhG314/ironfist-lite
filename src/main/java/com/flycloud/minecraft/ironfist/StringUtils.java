@@ -1,6 +1,6 @@
 package com.flycloud.minecraft.ironfist;
 
-import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
 
 public class StringUtils {
     public static String translate(String toLocalized) {
@@ -9,7 +9,7 @@ public class StringUtils {
 
     public static String translate(String toLocalized, boolean prefix) {
         String key = prefix ? IronFist.PREFIX + toLocalized : toLocalized;
-        return I18n.get(key);
+        return Component.translatable(key).getString();
     }
 
     public static String translateWithFormat(String toLocalized, Object... args) {
@@ -18,6 +18,6 @@ public class StringUtils {
 
     public static String translateWithFormat(String toLocalized, boolean prefix, Object... args) {
         String key = prefix ? IronFist.PREFIX + toLocalized : toLocalized;
-        return I18n.get(key, args);
+        return Component.translatable(key, args).getString();
     }
 }

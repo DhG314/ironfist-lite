@@ -1,25 +1,24 @@
 package com.flycloud.minecraft.ironfist;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
-// An example config class. This is not required, but it's a good idea to have one to keep your config organized.
-// Demonstrates how to use Forge's config APIs
-@Mod.EventBusSubscriber(modid = IronFist.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = IronFist.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class Config {
-    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    private static final ForgeConfigSpec.BooleanValue FIST_ONLY = BUILDER.comment("Whether to only allow fists").define("fistOnly", false);
-    private static final ForgeConfigSpec.IntValue MAX_LV = BUILDER.comment("The max level of fist").defineInRange("maxLV", 30, 0, Integer.MAX_VALUE);
-    private static final ForgeConfigSpec.DoubleValue XPMULTIPLE = BUILDER.comment("The xp multiple").defineInRange("xpMultiple", 1.0, 0.1, Float.MAX_VALUE);
-    private static final ForgeConfigSpec.IntValue LIMIT_BREAK_SPEED = BUILDER.comment("The limit of break speed(0 to disable)").defineInRange("limitBreakSpeed", 10, 0, Integer.MAX_VALUE);
-    private static final ForgeConfigSpec.BooleanValue FIST_DAMAGE = BUILDER.comment("Whether add fist damage").define("fistDamage", false);
-    private static final ForgeConfigSpec.BooleanValue FIST_RANGE = BUILDER.comment("Whether add fist range").define("fistRange", false);
-    private static final ForgeConfigSpec.BooleanValue SAVE_DATA_ON_DEATH = BUILDER.comment("Whether save data on death").define("saveDataOnDeath", true);
+    private static final ModConfigSpec.BooleanValue FIST_ONLY = BUILDER.comment("Whether to only allow fists").define("fistOnly", false);
+    private static final ModConfigSpec.IntValue MAX_LV = BUILDER.comment("The max level of fist").defineInRange("maxLV", 30, 0, Integer.MAX_VALUE);
+    private static final ModConfigSpec.DoubleValue XPMULTIPLE = BUILDER.comment("The xp multiple").defineInRange("xpMultiple", 1.0, 0.1, Float.MAX_VALUE);
+    private static final ModConfigSpec.IntValue LIMIT_BREAK_SPEED = BUILDER.comment("The limit of break speed(0 to disable)").defineInRange("limitBreakSpeed", 10, 0, Integer.MAX_VALUE);
+    private static final ModConfigSpec.BooleanValue FIST_DAMAGE = BUILDER.comment("Whether add fist damage").define("fistDamage", false);
+    private static final ModConfigSpec.BooleanValue FIST_RANGE = BUILDER.comment("Whether add fist range").define("fistRange", false);
+    private static final ModConfigSpec.BooleanValue SAVE_DATA_ON_DEATH = BUILDER.comment("Whether save data on death").define("saveDataOnDeath", true);
 
-    static final ForgeConfigSpec SPEC = BUILDER.build();
+    static final ModConfigSpec SPEC = BUILDER.build();
 
     public static boolean fistOnly = false;
     public static int maxLV = 30;
@@ -28,7 +27,6 @@ public class Config {
     public static boolean fistDamage = false;
     public static boolean fistRange = false;
     public static boolean saveDataOnDeath = true;
-    //记得改PacketHandler和Command
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {

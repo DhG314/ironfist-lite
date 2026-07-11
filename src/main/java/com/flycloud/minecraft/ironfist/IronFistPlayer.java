@@ -2,13 +2,15 @@ package com.flycloud.minecraft.ironfist;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.network.NetworkDirection;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class IronFistPlayer {
     public final static String NAME = "IronFistPlayer";
@@ -41,10 +43,9 @@ public class IronFistPlayer {
     private boolean shouldApplyFistModifiers() {
         return !(player.getMainHandItem().getItem() != Items.AIR &&
                 (Config.fistOnly ||
-                        (player.getMainHandItem().hasTag() &&
-                                (player.getMainHandItem().getTags().anyMatch(
-                                        tag -> "minecraft:tools".equals(tag.location().toString()) || "forge:tools".equals(tag.location().toString()))
-                                ))));
+                        (player.getMainHandItem().getTags().anyMatch(
+                                tag -> "minecraft:tools".equals(tag.location().toString()) || "c:tools".equals(tag.location().toString()) || "forge:tools".equals(tag.location().toString()))
+                        )));
     }
 
     public void applyAllModifiers() {
@@ -53,31 +54,33 @@ public class IronFistPlayer {
     }
 
     private void applyFistRangeModifiers() {
-        AttributeInstance blockReach = player.getAttribute(ForgeMod.BLOCK_REACH.get());
+//        AttributeInstance blockReach = player.getAttribute(NeoForgeMod.BLOCK_REACH.get());
+        AttributeInstance blockReach = player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
         if (blockReach != null) {
-            blockReach.removeModifier(player.getUUID());
+            blockReach.removeModifier(ResourceLocation.parse("ironfist:block_range"));
         }
-        AttributeInstance entityReach = player.getAttribute(ForgeMod.ENTITY_REACH.get());
+//        AttributeInstance entityReach = player.getAttribute(NeoForgeMod.ENTITY_REACH.get());
+        AttributeInstance entityReach = player.getAttribute(Attributes.ENTITY_INTERACTION_RANGE);
         if (entityReach != null) {
-            entityReach.removeModifier(player.getUUID());
+            entityReach.removeModifier(ResourceLocation.parse("ironfist:entity_range"));
         }
         if (Config.fistRange && shouldApplyFistModifiers()) {
             if (blockReach != null) {
-                blockReach.addTransientModifier(new AttributeModifier(player.getUUID(), "Fist block range modifier", (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADDITION));
+                blockReach.addTransientModifier(new AttributeModifier(ResourceLocation.parse("ironfist:block_range"), (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADD_VALUE));
             }
             if (entityReach != null) {
-                entityReach.addTransientModifier(new AttributeModifier(player.getUUID(), "Fist entity range modifier", (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADDITION));
+                entityReach.addTransientModifier(new AttributeModifier(ResourceLocation.parse("ironfist:entity_range"), (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADD_VALUE));
             }
         }
     }
 
     private void applyFistDamageModifier() {
-        AttributeInstance attackDamage = player.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
+        AttributeInstance attackDamage = player.getAttribute(Attributes.ATTACK_DAMAGE);
         if (attackDamage != null) {
-            attackDamage.removeModifier(player.getUUID());
+            attackDamage.removeModifier(ResourceLocation.parse("ironfist:attack_damage"));
         }
         if (Config.fistDamage && shouldApplyFistModifiers() && attackDamage != null) {
-            attackDamage.addTransientModifier(new AttributeModifier(player.getUUID(), "Fist damage modifier", (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADDITION));
+            attackDamage.addTransientModifier(new AttributeModifier(ResourceLocation.parse("ironfist:attack_damage"), (double) (fistLV - 1) / 2, AttributeModifier.Operation.ADD_VALUE));
         }
     }
 
@@ -97,7 +100,7 @@ public class IronFistPlayer {
 
     public void sync(){
         if(player instanceof ServerPlayer serverPlayer){
-            PacketHandler.instance.sendTo(new PacketHandler.MessageFistSync(fistLV, fistXP),serverPlayer.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+            PacketDistributor.sendToPlayer(serverPlayer, new PacketHandler.MessageFistSync(fistLV, fistXP));
         }
     }
 
